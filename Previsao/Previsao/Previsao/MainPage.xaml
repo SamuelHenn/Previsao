@@ -2,13 +2,15 @@
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:Previsao"
-             x:Class="Previsao.MainPage">
+             x:Class="Previsao.MainPage"
+             Title="Previsão">
 
     <StackLayout>
-        <!-- Place new controls here -->
-    	<Label Text="Welcome to Xamarin.Forms!" 
+        
+    	<Label Text="Bem vindo ao placar do previsão" 
            HorizontalOptions="Center"
            VerticalOptions="CenterAndExpand" />
+        <Button Text="Começar jogo" Clicked="NewGame" />
     </StackLayout>
 
 </ContentPage>

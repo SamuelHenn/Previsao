@@ -9,12 +9,18 @@ using Xamarin.Forms.Xaml;
 
 namespace Previsao.View
 {
-	[XamlCompilation(XamlCompilationOptions.Compile)]
-	public partial class Menu : MasterDetailPage
+    [XamlCompilation(XamlCompilationOptions.Compile)]
+    public partial class Menu : MasterDetailPage
     {
-		public Menu ()
-		{
-			InitializeComponent ();
-		}
-	}
+        public Menu()
+        {
+            InitializeComponent();
+        }
+
+        public void NewGame(object sender, EventArgs args)
+        {
+            Detail.Navigation.PushAsync(new View.Players());
+            IsPresented = false;
+        }
+    }
 }

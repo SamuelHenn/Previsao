@@ -13,5 +13,10 @@ namespace Previsao
         {
             InitializeComponent();
         }
+
+        public void NewGame(object sender, EventArgs args)
+        {
+            Navigation.PushAsync(new View.Players());
+        }
     }
 }

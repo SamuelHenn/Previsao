@@ -6,8 +6,7 @@
     <MasterDetailPage.Master>
         <ContentPage Title="Menu">
             <StackLayout>
-                <Button Text="Home" />
-                <Button Text="2" />
+                <Button Text="Novo jogo" Clicked="NewGame" />
             </StackLayout>
         </ContentPage>
     </MasterDetailPage.Master>
