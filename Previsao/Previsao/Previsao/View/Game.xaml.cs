@@ -19,21 +19,29 @@ namespace Previsao.View
         {
             InitializeComponent();
 
-            match = new Match { Players = players, Rounds = new List<Round>(), Results = new List<int>() };
+            match = new Match { Players = players, Rounds = new List<Round>() };
 
             // For test
+            Random rand = new Random();
             for (int i = 1; i <= 3; i++)
             {
-                Round r = new Round { Players = match.Players, Bet = new List<int>() };
+                Round r = new Round { Players = match.Players, Bets = new List<Bet>() };
 
                 foreach (var x in match.Players)
                 {
-                    r.Bet.Add((int)Math.Round(3.0m));
+                    r.Bets.Add(new Bet { Value = rand.Next(3), Ok = rand.NextDouble() >= 0.5 });
                 }
 
                 match.Rounds.Add(r);
             }
             // End test
+
+            RefreshGame();
+        }
+
+        protected override void OnAppearing()
+        {
+            base.OnAppearing();
 
             RefreshGame();
         }
@@ -48,17 +56,25 @@ namespace Previsao.View
                     VerticalOptions = LayoutOptions.Start,
                     HorizontalOptions = LayoutOptions.FillAndExpand,
                     RowDefinitions = {
-                        new RowDefinition { Height = GridLength.Auto },
+                        new RowDefinition { Height = GridLength.Auto }
                     },
                     ColumnDefinitions = {
-                        new ColumnDefinition { Width = GridLength.Star },
+                        new ColumnDefinition { Width = GridLength.Auto },
+                        new ColumnDefinition { Width = GridLength.Star }
                     }
                 };
-                for (int c = 0; c < match.Players.Count; c++)
+                grid.Children.Add(new Label()
+                {
+                    Text = "Rod.",
+                    HorizontalOptions = LayoutOptions.FillAndExpand,
+                    HorizontalTextAlignment = TextAlignment.Center,
+                    BackgroundColor = Color.Gray
+                }, 0, 0);
+                for (int c = 1; c <= match.Players.Count; c++)
                 {
                     grid.Children.Add(new Label()
                     {
-                        Text = match.Players.ElementAt(c).Name,
+                        Text = match.Players.ElementAt(c - 1).Name,
                         HorizontalOptions = LayoutOptions.FillAndExpand,
                         HorizontalTextAlignment = TextAlignment.Center,
                         BackgroundColor = Color.LightGray
@@ -66,35 +82,74 @@ namespace Previsao.View
                 }
                 for (int l = 1; l <= match.Rounds.Count; l++)
                 {
+                    grid.Children.Add(new Label()
+                    {
+                        Text = l.ToString(),
+                        HorizontalOptions = LayoutOptions.FillAndExpand,
+                        HorizontalTextAlignment = TextAlignment.Center,
+                        BackgroundColor = Color.Gray
+                    }, 0, l);
                     for (int c = 0; c < match.Players.Count; c++)
                     {
+                        Bet b = match.Rounds.ElementAt(l - 1).Bets.ElementAt(c);
                         Label bet = new Label()
                         {
-                            Text = match.Rounds.ElementAt(l - 1).Bet.ElementAt(c).ToString(),
+                            Text = b.Value.ToString(),
                             HorizontalOptions = LayoutOptions.FillAndExpand,
                             HorizontalTextAlignment = TextAlignment.Center,
-                            BackgroundColor = Color.LightBlue
+                            BackgroundColor = b.Ok ? Color.LightGreen : Color.LightSalmon
                         };
 
                         StackLayout cell = new StackLayout() { Orientation = StackOrientation.Horizontal };
                         if (l == match.Rounds.Count)
                         {
-                            //Button error = new Button() { Text = "X", WidthRequest = 15 };
-                            //Button acert = new Button() { Text = "V", WidthRequest = 15 };
-
-                            //cell.Children.Add(error);
+                            TapGestureRecognizer tap = new TapGestureRecognizer();
+                            tap.Tapped += delegate
+                            {
+                                b.Ok = !b.Ok;
+                                RefreshGame();
+                            };
+                            cell.GestureRecognizers.Add(tap);
                             cell.Children.Add(bet);
-                            //cell.Children.Add(acert);
                         }
                         else
                         {
                             cell.Children.Add(bet);
                         }
 
-                        grid.Children.Add(cell, c, l);
+                        grid.Children.Add(cell, c + 1, l);
                     }
                 }
+                grid.Children.Add(new Label()
+                {
+                    Text = "Tot.",
+                    HorizontalOptions = LayoutOptions.FillAndExpand,
+                    HorizontalTextAlignment = TextAlignment.Center,
+                    BackgroundColor = Color.Gray
+                }, 0, match.Rounds.Count + 1);
+                for (int c = 1; c <= match.Players.Count; c++)
+                {
+                    grid.Children.Add(new Label()
+                    {
+                        Text = match.GetPlayerResult(match.Players.ElementAt(c - 1)).ToString(),
+                        HorizontalOptions = LayoutOptions.FillAndExpand,
+                        HorizontalTextAlignment = TextAlignment.Center,
+                        BackgroundColor = Color.LightGray
+                    }, c, match.Rounds.Count + 1);
+                }
                 GameContent.Children.Add(grid);
+
+                Button newRound = new Button()
+                {
+                    Text = "Nova rodada",
+                    HorizontalOptions = LayoutOptions.Center,
+                    Margin = 10
+                };
+                newRound.Clicked += delegate
+                {
+                    Navigation.PushAsync(new NewRound(match));
+                };
+                GameContent.Children.Add(newRound);
             }
             catch (Exception e)
             {

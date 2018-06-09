@@ -7,6 +7,6 @@ namespace Previsao.Model
     public class Round
     {
         public List<Player> Players { get; set; }
-        public List<int> Bet { get; set; }
+        public List<Bet> Bets { get; set; }
     }
 }

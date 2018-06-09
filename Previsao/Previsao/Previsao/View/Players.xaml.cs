@@ -45,10 +45,10 @@ namespace Previsao.View
             try
             {
                 // Para testar
-                players.Add(new Player { Name = "Kuki" });
-                players.Add(new Player { Name = "Muka" });
-                players.Add(new Player { Name = "Bronca" });
-                players.Add(new Player { Name = "Pacheco" });
+                players.Add(new Player { Id = Guid.NewGuid(), Name = "Kuki" });
+                players.Add(new Player { Id = Guid.NewGuid(), Name = "Muka" });
+                players.Add(new Player { Id = Guid.NewGuid(), Name = "Bronca" });
+                players.Add(new Player { Id = Guid.NewGuid(), Name = "Pacheco" });
 
                 if (players is null || players.Count == 0)
                     throw new Exception();
