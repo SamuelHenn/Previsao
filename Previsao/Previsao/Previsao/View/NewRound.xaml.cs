@@ -15,6 +15,7 @@ namespace Previsao.View
     {
         Match match = null;
         Round round = null;
+        int roundNumber = 0;
 
         public NewRound(Match _match)
         {
@@ -22,6 +23,7 @@ namespace Previsao.View
 
             match = _match;
             round = new Round { Players = _match.Players, Bets = new List<Bet>() };
+            roundNumber = match.Rounds.Count + 1;
 
             foreach (var x in _match.Players)
             {
@@ -37,7 +39,7 @@ namespace Previsao.View
 
             Label title = new Label()
             {
-                Text = (match.Rounds.Count + 1) + "º",
+                Text = roundNumber + "º",
                 FontSize = 24,
                 FontAttributes = FontAttributes.Bold,
                 HorizontalOptions = LayoutOptions.FillAndExpand,
@@ -92,12 +94,19 @@ namespace Previsao.View
             {
                 Text = "Total: " + sum,
                 FontAttributes = FontAttributes.Bold,
-                HorizontalOptions = LayoutOptions.End
+                HorizontalOptions = LayoutOptions.End,
+                TextColor = roundNumber == sum ? Color.Red : Color.Green
             };
             Content.Children.Add(total);
             Button back = new Button() { Text = "Começar rodada", HorizontalOptions = LayoutOptions.End };
             back.Clicked += delegate
             {
+                if (roundNumber == sum)
+                {
+                    DisplayAlert("Atenção", "Número de vitórias não pode ser igual ao número da rodada!", "Ok");
+                    return;
+                }
+
                 match.Rounds.Add(round);
                 Navigation.PopAsync();
             };

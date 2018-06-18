@@ -139,57 +139,46 @@ namespace Previsao.View
                 }
                 GameContent.Children.Add(grid);
 
-                Button newRound = new Button()
+                if (match.Rounds.Count < 10)
                 {
-                    Text = "Nova rodada",
-                    HorizontalOptions = LayoutOptions.Center,
-                    Margin = 10
-                };
-                newRound.Clicked += delegate
+                    Button newRound = new Button()
+                    {
+                        Text = "Nova rodada",
+                        HorizontalOptions = LayoutOptions.Center,
+                        Margin = 10
+                    };
+                    newRound.Clicked += delegate
+                    {
+                        Navigation.PushAsync(new NewRound(match));
+                    };
+                    GameContent.Children.Add(newRound);
+                }
+                else
                 {
-                    Navigation.PushAsync(new NewRound(match));
-                };
-                GameContent.Children.Add(newRound);
+                    Button endGame = new Button()
+                    {
+                        Text = "Finalizar partida",
+                        HorizontalOptions = LayoutOptions.Center,
+                        Margin = 10
+                    };
+                    endGame.Clicked += delegate
+                    {
+                        List<Player> results = match.GetResults();
+                        string message = string.Empty;
+                        foreach (var p in results)
+                        {
+                            message += p.Name + ": " + p.Score + "\n";
+                        }
+
+                        DisplayAlert("Parabéns " + results.First().Name, message, "Ok");
+                    };
+                    GameContent.Children.Add(endGame);
+                }
             }
             catch (Exception e)
             {
                 GameContent.Children.Add(new Label() { Text = e.Message });
             }
-
-            /*
-            // Print players
-            StackLayout players = new StackLayout() { Orientation = StackOrientation.Horizontal, BackgroundColor = Color.LightGray, Spacing = 0.0 };
-            foreach (Player p in match.Players)
-            {
-                players.Children.Add(new Label()
-                {
-                    Text = p.Name,
-                    HorizontalOptions = LayoutOptions.FillAndExpand,
-                    HorizontalTextAlignment = TextAlignment.Center
-                });
-                players.Children.Add(new BoxView() { Color = Color.Black, WidthRequest = 1.0 });
-            }
-            GameContent.Children.Add(players);
-            GameContent.Children.Add(new BoxView() { Color = Color.Black, HeightRequest = 1.0 });
-
-            // Print rounds
-            foreach (Round r in match.Rounds)
-            {
-                StackLayout round = new StackLayout() { Orientation = StackOrientation.Horizontal, BackgroundColor = Color.White, Spacing = 0.0 };
-                for (int i = 0; i < match.Players.Count; i++)
-                {
-                    round.Children.Add(new Label()
-                    {
-                        Text = r.Bet.ElementAt(i).ToString(),
-                        HorizontalOptions = LayoutOptions.FillAndExpand,
-                        HorizontalTextAlignment = TextAlignment.Center
-                    });
-                    round.Children.Add(new BoxView() { Color = Color.Black, WidthRequest = 1.0 });
-                }
-                GameContent.Children.Add(round);
-                GameContent.Children.Add(new BoxView() { Color = Color.Black, HeightRequest = 1.0 });
-            }
-            */
         }
     }
 }

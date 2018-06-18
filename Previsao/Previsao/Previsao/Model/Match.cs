@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
 
 namespace Previsao.Model
 {
@@ -8,6 +8,7 @@ namespace Previsao.Model
     {
         public List<Player> Players { get; set; }
         public List<Round> Rounds { get; set; }
+
         public int GetPlayerResult(Player p)
         {
             int index = 0;
@@ -23,6 +24,16 @@ namespace Previsao.Model
                 result += r.Bets[index].Ok ? 10 + 2 * r.Bets[index].Value : 0;
             }
             return result;
+        }
+
+        public List<Player> GetResults()
+        {
+            foreach (Player p in Players)
+            {
+                p.Score = GetPlayerResult(p);
+            }
+
+            return Players.OrderByDescending(x => x.Score).ToList();
         }
     }
 }
