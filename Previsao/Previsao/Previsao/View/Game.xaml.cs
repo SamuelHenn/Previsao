@@ -1,4 +1,5 @@
-﻿using Previsao.Model;
+﻿using Previsao.Controller;
+using Previsao.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,7 +22,7 @@ namespace Previsao.View
 
             match = new Match { Players = players, Rounds = new List<Round>() };
 
-            // For test
+            /*// For test
             Random rand = new Random();
             for (int i = 1; i <= 3; i++)
             {
@@ -34,7 +35,7 @@ namespace Previsao.View
 
                 match.Rounds.Add(r);
             }
-            // End test
+            // End test*/
 
             RefreshGame();
         }
@@ -164,6 +165,7 @@ namespace Previsao.View
                     endGame.Clicked += delegate
                     {
                         List<Player> results = match.GetResults();
+                        new ScoreController().SaveScores(results);
                         string message = string.Empty;
                         foreach (var p in results)
                         {

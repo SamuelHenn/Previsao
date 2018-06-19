@@ -18,5 +18,10 @@ namespace Previsao
         {
             Navigation.PushAsync(new View.Players());
         }
+
+        public void Scores(object sender, EventArgs args)
+        {
+            Navigation.PushAsync(new View.Scores());
+        }
     }
 }

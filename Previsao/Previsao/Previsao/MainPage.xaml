@@ -11,6 +11,7 @@
            HorizontalOptions="Center"
            VerticalOptions="CenterAndExpand" />
         <Button Text="Começar jogo" Clicked="NewGame" />
+        <Button Text="Recordes" Clicked="Scores" />
     </StackLayout>
 
 </ContentPage>
