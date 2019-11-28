@@ -4,8 +4,10 @@
              x:Class="Previsao.View.Game"
              Title="Valendo!">
     <ContentPage.Content>
-        <StackLayout x:Name="GameContent" Spacing="0" Margin="0">
-            
-        </StackLayout>
+        <ScrollView>
+            <StackLayout x:Name="GameContent" Spacing="0" Margin="0">
+
+            </StackLayout>
+        </ScrollView>
     </ContentPage.Content>
 </ContentPage>

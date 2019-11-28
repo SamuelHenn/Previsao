@@ -7,15 +7,19 @@
         <ToolbarItem Text="Começar" Clicked="StartGame" />
     </ContentPage.ToolbarItems>
 
-    <StackLayout>
-        <ListView x:Name="ListPlayers">
-            <ListView.ItemTemplate>
-                <DataTemplate>
-                    <TextCell Text="{Binding Name}" />
-                </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>
-        <Entry x:Name="PlayerName" Placeholder="Nome do jogador" />
-        <Button Text="Adicionar" Clicked="AddPlayer" />
-    </StackLayout>
+    <ScrollView>
+        <StackLayout>
+            <StackLayout Orientation="Horizontal" Margin="5">
+                <Entry x:Name="PlayerName" Placeholder="Nome do jogador" HorizontalOptions="FillAndExpand" />
+                <Button Text="Adicionar" Clicked="AddPlayer" />
+            </StackLayout>
+            <ListView x:Name="ListPlayers" HorizontalOptions="Start">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <TextCell Text="{Binding Name}" />
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </StackLayout>
+    </ScrollView>
 </ContentPage>

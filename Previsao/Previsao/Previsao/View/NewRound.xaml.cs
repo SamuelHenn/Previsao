@@ -16,6 +16,7 @@ namespace Previsao.View
         Match match = null;
         Round round = null;
         int roundNumber = 0;
+        int firstPosition = 0;
 
         public NewRound(Match _match)
         {
@@ -24,11 +25,18 @@ namespace Previsao.View
             match = _match;
             round = new Round { Players = _match.Players, Bets = new List<Bet>() };
             roundNumber = match.Rounds.Count + 1;
+            firstPosition = _match.Players.Max(x => x.Score);
+
+            string firstPlayers = string.Empty;
 
             foreach (var x in _match.Players)
             {
                 round.Bets.Add(new Bet { Value = 0, Ok = true });
+
+                if (x.Score == firstPosition)
+                    firstPlayers += x.Name + "\n";
             }
+
 
             ShowPlayers();
         }
@@ -39,8 +47,8 @@ namespace Previsao.View
 
             Label title = new Label()
             {
-                Text = roundNumber + "º",
-                FontSize = 24,
+                Text = roundNumber + "º rodada",
+                FontSize = 25,
                 FontAttributes = FontAttributes.Bold,
                 HorizontalOptions = LayoutOptions.FillAndExpand,
                 HorizontalTextAlignment = TextAlignment.Center
@@ -51,13 +59,19 @@ namespace Previsao.View
             for (int i = 0; i < round.Bets.Count; i++)
             {
                 StackLayout line = new StackLayout() { Orientation = StackOrientation.Horizontal, Spacing = 0.0 };
-                line.Children.Add(new Label()
+                Label playerName = new Label()
                 {
-                    Text = match.Players[i].Name,
+                    Text = "(" + match.Players[i].Score + ") " + match.Players[i].Name,
                     HorizontalOptions = LayoutOptions.FillAndExpand,
-                    HorizontalTextAlignment = TextAlignment.Center,
+                    HorizontalTextAlignment = TextAlignment.Start,
                     VerticalOptions = LayoutOptions.Center
-                });
+                };
+                if (roundNumber >= 6)
+                {
+                    playerName.TextColor = match.Players[i].Score == firstPosition ? Color.Red : Color.Black;
+                    playerName.FontAttributes = match.Players[i].Score == firstPosition ? FontAttributes.Bold : FontAttributes.None;
+                }
+                line.Children.Add(playerName);
                 Label bet = new Label()
                 {
                     Text = round.Bets[i].Value.ToString(),
@@ -95,6 +109,7 @@ namespace Previsao.View
                 Text = "Total: " + sum,
                 FontAttributes = FontAttributes.Bold,
                 HorizontalOptions = LayoutOptions.End,
+                FontSize = 20,
                 TextColor = roundNumber == sum ? Color.Red : Color.Green
             };
             Content.Children.Add(total);

@@ -18,6 +18,12 @@ namespace Previsao.View
         public Players()
         {
             InitializeComponent();
+
+            PlayerName.Completed += delegate
+            {
+                AddPlayer(this, null);
+            };
+
             RefreshList();
         }
 
@@ -33,6 +39,7 @@ namespace Previsao.View
                 PlayerName.Text = string.Empty;
                 players.Add(new Player { Id = Guid.NewGuid(), Name = name });
                 RefreshList();
+                PlayerName.Focus();
             }
             catch
             {
@@ -44,8 +51,8 @@ namespace Previsao.View
         {
             try
             {
-                /*// For test
-                players.Add(new Player { Id = Guid.NewGuid(), Name = "Kuki" });
+                // For test
+                /*players.Add(new Player { Id = Guid.NewGuid(), Name = "Kuki" });
                 players.Add(new Player { Id = Guid.NewGuid(), Name = "Muka" });
                 players.Add(new Player { Id = Guid.NewGuid(), Name = "Bronca" });
                 players.Add(new Player { Id = Guid.NewGuid(), Name = "Pacheco" });*/
@@ -53,7 +60,9 @@ namespace Previsao.View
                 if (players is null || players.Count == 0)
                     throw new Exception();
 
-                Navigation.PushAsync(new View.Game(players));
+                var gamePage = new View.Game(players);
+                NavigationPage.SetHasBackButton(gamePage, false);
+                Navigation.PushAsync(gamePage);
             }
             catch
             {

@@ -17,7 +17,7 @@ namespace Previsao.View
         {
             InitializeComponent();
 
-            ListScores.ItemsSource = new ScoreController().GetScores().OrderBy(x => x.Score);
+            ListScores.ItemsSource = new ScoreController().GetScores().OrderByDescending(x => x.Score);
         }
     }
 }

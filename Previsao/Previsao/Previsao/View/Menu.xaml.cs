@@ -28,5 +28,11 @@ namespace Previsao.View
             Detail.Navigation.PushAsync(new View.Scores());
             IsPresented = false;
         }
+
+        public void Matches(object sender, EventArgs args)
+        {
+            Detail.Navigation.PushAsync(new View.Matches());
+            IsPresented = false;
+        }
     }
 }

@@ -23,5 +23,10 @@ namespace Previsao
         {
             Navigation.PushAsync(new View.Scores());
         }
+
+        public void Matches(object sender, EventArgs args)
+        {
+            Navigation.PushAsync(new View.Matches());
+        }
     }
 }

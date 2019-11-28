@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -6,8 +7,14 @@ namespace Previsao.Model
 {
     public class Match
     {
+        [JsonProperty]
         public List<Player> Players { get; set; }
+        [JsonProperty]
         public List<Round> Rounds { get; set; }
+        [JsonProperty]
+        public bool Finished { get; set; }
+        [JsonProperty]
+        public int Id { get; set; }
 
         public int GetPlayerResult(Player p)
         {

@@ -16,15 +16,22 @@ namespace Previsao.View
     {
         private Match match;
 
-        public Game(List<Player> players)
+        public Game(List<Player> players, Match m = null)
         {
             InitializeComponent();
 
-            match = new Match { Players = players, Rounds = new List<Round>() };
+            if (m != null)
+            {
+                match = m;
+            }
+            else
+            {
+                match = new Match { Players = players, Rounds = new List<Round>(), Finished = false, Id = new MathController().GetNextId() };
+            }
 
-            /*// For test
-            Random rand = new Random();
-            for (int i = 1; i <= 3; i++)
+            // For test
+            /*Random rand = new Random();
+            for (int i = 1; i <= 5; i++)
             {
                 Round r = new Round { Players = match.Players, Bets = new List<Bet>() };
 
@@ -34,8 +41,8 @@ namespace Previsao.View
                 }
 
                 match.Rounds.Add(r);
-            }
-            // End test*/
+            }*/
+            // End test
 
             RefreshGame();
         }
@@ -47,10 +54,26 @@ namespace Previsao.View
             RefreshGame();
         }
 
+        protected override bool OnBackButtonPressed()
+        {
+            if (!match.Finished)
+            {
+                Device.BeginInvokeOnMainThread(async () =>
+                {
+                    var result = await this.DisplayAlert("Quer mesmo sair?", "", "Sim", "Cancelar");
+                    if (result)
+                        await this.Navigation.PopAsync();
+                });
+                return true;
+            }
+            return false;
+        }
+
         private void RefreshGame()
         {
             try
             {
+                //new MathController().SaveMatch(match);
                 GameContent.Children.Clear();
                 Grid grid = new Grid()
                 {
@@ -69,7 +92,7 @@ namespace Previsao.View
                     Text = "Rod.",
                     HorizontalOptions = LayoutOptions.FillAndExpand,
                     HorizontalTextAlignment = TextAlignment.Center,
-                    BackgroundColor = Color.Gray
+                    BackgroundColor = Color.LightGray
                 }, 0, 0);
                 for (int c = 1; c <= match.Players.Count; c++)
                 {
@@ -88,7 +111,7 @@ namespace Previsao.View
                         Text = l.ToString(),
                         HorizontalOptions = LayoutOptions.FillAndExpand,
                         HorizontalTextAlignment = TextAlignment.Center,
-                        BackgroundColor = Color.Gray
+                        BackgroundColor = Color.LightGray
                     }, 0, l);
                     for (int c = 0; c < match.Players.Count; c++)
                     {
@@ -126,7 +149,7 @@ namespace Previsao.View
                     Text = "Tot.",
                     HorizontalOptions = LayoutOptions.FillAndExpand,
                     HorizontalTextAlignment = TextAlignment.Center,
-                    BackgroundColor = Color.Gray
+                    BackgroundColor = Color.LightGray
                 }, 0, match.Rounds.Count + 1);
                 for (int c = 1; c <= match.Players.Count; c++)
                 {
@@ -135,37 +158,71 @@ namespace Previsao.View
                         Text = match.GetPlayerResult(match.Players.ElementAt(c - 1)).ToString(),
                         HorizontalOptions = LayoutOptions.FillAndExpand,
                         HorizontalTextAlignment = TextAlignment.Center,
-                        BackgroundColor = Color.LightGray
+                        BackgroundColor = Color.LightGray,
+                        FontAttributes = FontAttributes.Bold
                     }, c, match.Rounds.Count + 1);
                 }
                 GameContent.Children.Add(grid);
-
+                StackLayout stackLayout = new StackLayout
+                {
+                    Orientation = StackOrientation.Horizontal
+                };
                 if (match.Rounds.Count < 10)
                 {
                     Button newRound = new Button()
                     {
                         Text = "Nova rodada",
-                        HorizontalOptions = LayoutOptions.Center,
+                        HorizontalOptions = LayoutOptions.FillAndExpand,
                         Margin = 10
                     };
                     newRound.Clicked += delegate
                     {
+                        foreach (var p in match.Players)
+                        {
+                            p.Score = match.GetPlayerResult(p);
+                        }
                         Navigation.PushAsync(new NewRound(match));
                     };
                     GameContent.Children.Add(newRound);
+                    Button backRound = new Button()
+                    {
+                        Text = "Voltar rodada",
+                        HorizontalOptions = LayoutOptions.FillAndExpand,
+                        Margin = 10
+                    };
+                    backRound.Clicked += delegate
+                    {
+                        Device.BeginInvokeOnMainThread(async () =>
+                        {
+                            var result = await this.DisplayAlert("Quer mesmo anular a última rodada?", "", "Sim", "Cancelar");
+                            if (result)
+                            {
+                                match.Rounds.RemoveAt(match.Rounds.Count - 1);
+                                foreach (var p in match.Players)
+                                {
+                                    p.Score = match.GetPlayerResult(p);
+                                }
+                                await Navigation.PushAsync(new NewRound(match));
+                            }
+                        });
+                    };
+                    if (match.Rounds.Count > 0)
+                        stackLayout.Children.Add(backRound);
                 }
                 else
                 {
                     Button endGame = new Button()
                     {
                         Text = "Finalizar partida",
-                        HorizontalOptions = LayoutOptions.Center,
+                        HorizontalOptions = LayoutOptions.FillAndExpand,
                         Margin = 10
                     };
                     endGame.Clicked += delegate
                     {
+                        match.Finished = true;
                         List<Player> results = match.GetResults();
                         new ScoreController().SaveScores(results);
+                        //new MathController().SaveMatch(match);
                         string message = string.Empty;
                         foreach (var p in results)
                         {
@@ -176,6 +233,18 @@ namespace Previsao.View
                     };
                     GameContent.Children.Add(endGame);
                 }
+                Button exit = new Button()
+                {
+                    Text = "Sair do jogo",
+                    HorizontalOptions = LayoutOptions.FillAndExpand,
+                    Margin = 10,
+                };
+                exit.Clicked += delegate
+                {
+                    OnBackButtonPressed();
+                };
+                stackLayout.Children.Add(exit);
+                GameContent.Children.Add(stackLayout);
             }
             catch (Exception e)
             {
